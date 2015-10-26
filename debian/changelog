@@ -1,0 +1,5 @@
+haproxy-upstart (1.4.25-1) trusty; urgency=low
+
+  * Haproxy 1.4 upstart
+
+ -- Kaija Chang <kaija.chang@gmail.com>  Fri, 23 Nov 2015 00:00:00 +0200

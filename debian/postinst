@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+rc=`find /etc/rc0.d/ -name "*haproxy"`
+
+if [ "$1" = "configure" ]; then
+	if [ "$rc" != "" ]; then
+    	echo "remove from init script"
+		update-rc.d haproxy remove
+	fi
+fi

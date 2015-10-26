@@ -1,0 +1,41 @@
+#!/usr/bin/make -f
+
+#PACKAGE_VERSION=$(shell git rev-parse --short HEAD)
+PACKAGE_VERSION=$(shell cat VERSION)
+#dpkg_buildflags := DEB_BUILD_MAINT_OPTIONS="hardening=+all" dpkg-buildflags
+DEB_HOST_ARCH_OS := $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+BUILD_DATE := $(shell dpkg-parsechangelog --show-field Date)
+
+clean:
+	rm -rf debian/haproxy-upstart debian/files
+
+binary-indep:
+
+binary-arch: checkroot
+	$(checkdir)
+	rm  -rf debian/haproxy-upstart
+	install -m 755 -d debian/haproxy-upstart/DEBIAN \
+                 -d debian/haproxy-upstart/etc \
+                 -d debian/haproxy-upstart/etc/init
+	install -m 644 debian/conffiles debian/haproxy-upstart/DEBIAN
+	install -m 644 haproxy.conf debian/haproxy-upstart/etc/init
+	install -m 755 debian/postinst debian/haproxy-upstart/DEBIAN
+	install -m 755 debian/postrm debian/haproxy-upstart/DEBIAN
+	cd debian/haproxy-upstart && find . -type f ! -regex '.*DEBIAN/.*' -printf '%P\0' | LC_ALL=C sort -z | xargs -r0 md5sum > DEBIAN/md5sums
+	dpkg-gencontrol -v$(PACKAGE_VERSION) -T -phaproxy-upstart -Pdebian/haproxy-upstart
+	find debian/haproxy-upstart -depth -newermt '$(BUILD_DATE)' -print0 | xargs -0r touch --no-dereference --date='$(BUILD_DATE)'
+	chown -R root.root debian/haproxy-upstart
+	chmod -R g-ws debian/haproxy-upstart
+	dpkg --build debian/haproxy-upstart ..
+
+
+binary: binary-arch
+
+build:
+build-arch:
+build-indep:
+
+checkroot:
+	test root = "`whoami`"
+
+.PHONY: build clean binary-indep build-arch binary checkroot

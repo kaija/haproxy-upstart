@@ -1,0 +1,11 @@
+Source: haproxy-upstart
+Section: net
+Priority: optional
+Build-depends:  haproxy
+Maintainer: Kaija Chang <kaija.chang@gmail.com>
+
+Package: haproxy-upstart
+Architecture: amd64
+Depends:
+Description: This package is build haproxy-upstart
+  This package compiled by kaija chang
